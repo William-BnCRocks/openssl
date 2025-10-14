@@ -49,6 +49,12 @@ pub fn build(b: *std.Build) void {
             ssl_dir_flag,
             "-DOPENSSL_BUILDING_OPENSSL",
             "-DOPENSSL_USE_NODELETE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
         },
     };
 
