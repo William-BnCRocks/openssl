@@ -22,14 +22,8 @@
 /* Should we define BN_DIV2W here? */
 
 /* Only one for the following should be defined */
-#ifdef ZIG_WINDOWS
-#undef SIXTY_FOUR_BIT_LONG
-#define SIXTY_FOUR_BIT
-#else
 #define SIXTY_FOUR_BIT_LONG
 #undef SIXTY_FOUR_BIT
-#endif
-
 #undef THIRTY_TWO_BIT
 
 #endif

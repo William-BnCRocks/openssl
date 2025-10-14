@@ -26,11 +26,7 @@ extern "C" {
 /*
  * OpenSSL was configured with the following options:
  */
-#ifdef ZIG_WINDOWS
-# ifndef OPENSSL_SYS_MINGW64
-#  define OPENSSL_SYS_MINGW64 1
-# endif
-#endif
+
 # define OPENSSL_CONFIGURED_API 30300
 # ifndef OPENSSL_RAND_SEED_OS
 #  define OPENSSL_RAND_SEED_OS
@@ -41,11 +37,6 @@ extern "C" {
 # ifndef OPENSSL_NO_ACVP_TESTS
 #  define OPENSSL_NO_ACVP_TESTS
 # endif
-#ifdef ZIG_WINDOWS
-# ifndef OPENSSL_NO_AFALGENG
-#  define OPENSSL_NO_AFALGENG
-# endif
-#endif
 # ifndef OPENSSL_NO_ASAN
 #  define OPENSSL_NO_ASAN
 # endif
@@ -64,15 +55,9 @@ extern "C" {
 # ifndef OPENSSL_NO_DEVCRYPTOENG
 #  define OPENSSL_NO_DEVCRYPTOENG
 # endif
-#ifdef ZIG_WINDOWS
-# ifndef OPENSSL_NO_EC_NISTP_64_GCC_128
-#  define OPENSSL_NO_EC_NISTP_64_GCC_128
-# endif
-#else
 # ifdef OPENSSL_NO_EC_NISTP_64_GCC_128
 #  undef OPENSSL_NO_EC_NISTP_64_GCC_128
 # endif
-#endif
 # ifndef OPENSSL_NO_EGD
 #  define OPENSSL_NO_EGD
 # endif
@@ -127,11 +112,9 @@ extern "C" {
 # ifndef OPENSSL_NO_WEAK_SSL_CIPHERS
 #  define OPENSSL_NO_WEAK_SSL_CIPHERS
 # endif
-#ifndef ZIG_WINDOWS
 # ifndef OPENSSL_NO_WINSTORE
 #  define OPENSSL_NO_WINSTORE
 # endif
-#endif
 # ifndef OPENSSL_NO_ZLIB
 #  define OPENSSL_NO_ZLIB
 # endif
@@ -158,13 +141,8 @@ extern "C" {
 # if !defined(OPENSSL_SYS_UEFI)
 #  undef BN_LLONG
 /* Only one for the following should be defined */
-#ifdef ZIG_WINDOWS
-#  undef SIXTY_FOUR_BIT_LONG
-#  define SIXTY_FOUR_BIT
-#else
 #  define SIXTY_FOUR_BIT_LONG
 #  undef SIXTY_FOUR_BIT
-#endif
 #  undef THIRTY_TWO_BIT
 # endif
 

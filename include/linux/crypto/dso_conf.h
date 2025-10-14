@@ -13,12 +13,7 @@
 # define OSSL_CRYPTO_DSO_CONF_H
 # pragma once
 
-#ifdef ZIG_WINDOWS
-# define DSO_WIN32
-# define DSO_EXTENSION ".dll"
-#else
 # define DSO_DLFCN
 # define HAVE_DLFCN_H
 # define DSO_EXTENSION ".so"
-#endif
 #endif

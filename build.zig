@@ -25,14 +25,37 @@ pub fn build(b: *std.Build) void {
         else => "-DOPENSSLDIR=\"/etc/ssl\"",
     };
 
-    const base_flags = [_][]const u8{
-        "-DAES_ASM",
-        "-DENGINESDIR=\"/dev/null\"",
-        "-DL_ENDIAN",
-        "-DMODULESDIR=\"/dev/null\"",
-        ssl_dir_flag,
-        "-DOPENSSL_BUILDING_OPENSSL",
-        "-DOPENSSL_USE_NODELETE",
+    const base_flags = switch (target.result.os.tag) {
+        .windows => [_][]const u8{
+            "-DAES_ASM",
+            "-DL_ENDIAN",
+            "-DOPENSSL_PIC",
+            "-DENGINESDIR=\"/dev/null\"",
+            "-DMODULESDIR=\"/dev/null\"",
+            "-DOPENSSLDIR=\"/usr/local/ssl\"",
+            "-DUNICODE",
+            "-D_UNICODE",
+            "-DWIN32_LEAN_AND_MEAN",
+            "-D_MT",
+            "-DOPENSSL_BUILDING_OPENSSL",
+            "-DNDEBUG",
+            "-DZIG_WINDOWS",
+        },
+        else => [_][]const u8{
+            "-DAES_ASM",
+            "-DENGINESDIR=\"/dev/null\"",
+            "-DL_ENDIAN",
+            "-DMODULESDIR=\"/dev/null\"",
+            ssl_dir_flag,
+            "-DOPENSSL_BUILDING_OPENSSL",
+            "-DOPENSSL_USE_NODELETE",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+        },
     };
 
     const crypto_flags = base_flags ++ [_][]const u8{
@@ -715,11 +738,11 @@ pub fn build(b: *std.Build) void {
             "ec/eck_prn.c",
             "ec/ecp_mont.c",
             "ec/ecp_nist.c",
-            "ec/ecp_nistp224.c",
-            "ec/ecp_nistp256.c",
-            "ec/ecp_nistp384.c",
-            "ec/ecp_nistp521.c",
-            "ec/ecp_nistputil.c",
+            // "ec/ecp_nistp224.c", // TODO: maybe not wanted on windows
+            // "ec/ecp_nistp256.c",
+            // "ec/ecp_nistp384.c",
+            // "ec/ecp_nistp521.c",
+            // "ec/ecp_nistputil.c",
             "ec/ecp_nistz256.c",
             //"ec/ecp_nistz256_table.c",
             "ec/ecp_oct.c",
@@ -879,7 +902,7 @@ pub fn build(b: *std.Build) void {
             "kdf/kdf_err.c",
             "lhash/lh_stats.c",
             "lhash/lhash.c",
-            "loongarchcap.c",
+            // "loongarchcap.c", // TODO: Not wanted on windows
             //"md2/md2_dgst.c",
             //"md2/md2_one.c",
             "md4/md4_dgst.c",
@@ -1190,9 +1213,14 @@ pub fn build(b: *std.Build) void {
         .flags = &crypto_flags,
     });
 
+    const crypto_distro_path = switch (target.result.os.tag) {
+        .windows => b.path("crypto/windows"),
+        else => b.path("crypto/linux"),
+    };
+
     switch (target.result.cpu.arch) {
         .x86_64 => lib.addCSourceFiles(.{
-            .root = b.path("crypto"),
+            .root = crypto_distro_path,
             .files = &.{
                 "aes/aes-x86_64.s",
                 "aes/aesni-mb-x86_64.s",
@@ -1250,7 +1278,7 @@ pub fn build(b: *std.Build) void {
     lib.addIncludePath(b.path("include"));
     lib.addIncludePath(upstream.path("providers/common/include"));
     lib.addIncludePath(upstream.path("providers/implementations/include"));
-    lib.addIncludePath(b.path("crypto"));
+    lib.addIncludePath(crypto_distro_path);
 
     lib.installHeadersDirectory(upstream.path("include"), "", .{});
     lib.installHeadersDirectory(b.path("include"), "", .{});
