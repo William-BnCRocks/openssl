@@ -15,7 +15,13 @@ jobs:
       fail-fast: false
       matrix:
         zig-version: [0.15.2, latest]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+        ming:
+          - mingw64
+          - mingw32
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -37,3 +43,25 @@ jobs:
 
       - name: Build
         run: zig build --summary all
+
+      - name: Create Test Executable
+        run: zig build executable --summary all
+
+      - name: Setup Windows
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{matrix.ming}}
+          install: make
+
+      - name: Configure OpenSSL (Windows)
+        if: runner.os == 'Windows'
+        shell: msys2 {0}
+        run: |
+          uname -a
+
+      - name: Configure OpenSSL (-Windows)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          uname -a
